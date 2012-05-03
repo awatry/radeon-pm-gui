@@ -49,6 +49,7 @@
 
 static pm_method_t curMethod;
 static pm_profile_t curProfile;
+static int curCard;
 
 static int setDynpm(char *card) {
     return setMethod(card, DYNPM);
@@ -122,6 +123,8 @@ void lowProfile(GtkWidget *widget, gpointer data){
             if (getMethod(cards[idx]) != METHOD_UNKNOWN) {
                 g_print("profile = %d\n", getProfile(cards[idx]));
             }
+        } else {
+            g_print("Insufficient permission to modify PM method/profile\n");
         }
         idx++;
     }
@@ -146,6 +149,8 @@ void dynpm(GtkWidget *widget, gpointer data){
             if (getMethod(cards[idx]) != METHOD_UNKNOWN) {
                 g_print("profile = %d\n", getProfile(cards[idx]));
             }
+        } else {
+            g_print("Insufficient permission to modify PM method\n");
         }
         idx++;
     }
