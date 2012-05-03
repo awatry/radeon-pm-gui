@@ -27,6 +27,10 @@
 //other than possibly using the raw ioctls, which I'm not ready to do.
 //#include <drm/radeon_drm.h>
 
+//Maybe the linux hwmon/sysfs headers will work
+//#include <linux/hwmon.h>
+//#include <linux/hwmon-sysfs.h>
+
 #include "pmlib.h"
 
 const char * const pm_profile_names[] = { "low", "medium", "high", "auto", "default", "unknown", NULL };
