@@ -33,7 +33,7 @@
  *          - Use something like gksudo to request permissions to read/write stuff
  *          - If adequate permissions, display current/min/max core/memory clocks
  *          - Add ability to handle multiple cards
- * 
+ *          - Add buttons to set ALL cards to a specific profile/method
  */
 
 #include <gtk/gtk.h>
