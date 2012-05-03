@@ -37,7 +37,9 @@ typedef enum pm_profile_t { LOW=0, MEDIUM=1, HIGH=2, AUTO=3, DEFAULT=4, PROFILE_
 typedef enum PM_METHOD { PROFILE=0, DYNPM=1, METHOD_UNKNOWN=2 } pm_method_t;
 #define MAX_METHOD METHOD_UNKNOWN
 
+extern pm_profile_t pm_profiles[];
 extern const char * const pm_profile_names[];
+extern const pm_method_t pm_methods[];
 extern const char * const pm_method_names[];
 extern const char* DEFAULT_DRM_DIR;
 extern const char* DEFAULT_METHOD_PATH;
@@ -47,7 +49,9 @@ extern const char* DEFAULT_PROFILE_PATH;
 #define PM_FALSE 0
 
 pm_method_t getMethod(char *card);
+const char* getMethodName(pm_method_t method);
 pm_profile_t getProfile(char *card);
+const char* getProfileName(pm_profile_t profile);
 int setMethod(char *card, pm_method_t newMethod);
 int setProfile(char *card, pm_profile_t newProfile);
 int getTemperature(char *card);

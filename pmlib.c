@@ -33,7 +33,10 @@
 
 #include "pmlib.h"
 
+pm_profile_t pm_profiles[] = {LOW, MEDIUM, HIGH, AUTO, DEFAULT, PROFILE_UNKNOWN, PROFILE_UNKNOWN+1 };
 const char * const pm_profile_names[] = { "low", "medium", "high", "auto", "default", "unknown", NULL };
+
+const pm_method_t pm_methods[] = {PROFILE, DYNPM, METHOD_UNKNOWN, METHOD_UNKNOWN+1};
 const char * const pm_method_names[] = { "profile", "dynpm", "unknown", NULL };
 const char* DEFAULT_DRM_DIR = "/sys/class/drm";
 const char* DEFAULT_METHOD_PATH = "/device/power_method";

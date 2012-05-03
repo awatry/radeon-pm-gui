@@ -49,10 +49,37 @@
 
 static pm_method_t curMethod;
 static pm_profile_t curProfile;
-static int curCard;
+static char* curCard = NULL;
 
-static int setDynpm(char *card) {
-    return setMethod(card, DYNPM);
+static void changeCard(GtkWidget *widget,
+        gpointer data){
+    
+    //Get the current selected index, and then the card that goes with that index.
+    //Save the card name in curCard
+}
+
+static void changePMProfile(GtkWidget *widget,
+        gpointer data){
+    
+    pm_profile_t newProfile = *(pm_profile_t*)data;
+    
+    if (curCard == NULL){
+        curCard = "card0";
+    }
+    
+    if (newProfile < 0 || newProfile >= MAX_PROFILE){
+        g_error("Invalid new profile %d\n", newProfile);
+        return;
+    }
+    
+    if (canModifyPM()) {
+        g_print("Setting profile %s\n", pm_profile_names[newProfile]);
+
+        setMethod(curCard, PROFILE);
+        setProfile(curCard, newProfile);
+    } else {
+        g_print("Insufficient permissions to set profile to %s\n", pm_profile_names[newProfile]);
+    }
 }
 
 /**
@@ -104,33 +131,6 @@ print_hello(GtkWidget *widget,
 
 }
 
-void lowProfile(GtkWidget *widget, gpointer data){
-    char **cards = getCards((char*) DEFAULT_DRM_DIR);
-    if (cards == NULL) {
-        g_printerr("Card list is empty.\n");
-        return;
-    }
-
-    int idx = 0;
-    while (cards[idx] != NULL) {
-        g_print("Found card: %s\n", cards[idx]);
-
-        if (canModifyPM()) {
-            g_print("Setting low profile\n");
-            setMethod(cards[idx], PROFILE);
-            setProfile(cards[idx], LOW);
-            g_print("method = %d\n", getMethod(cards[idx]));
-            if (getMethod(cards[idx]) != METHOD_UNKNOWN) {
-                g_print("profile = %d\n", getProfile(cards[idx]));
-            }
-        } else {
-            g_print("Insufficient permission to modify PM method/profile\n");
-        }
-        idx++;
-    }
-    freeCards(cards);
-}
-
 void dynpm(GtkWidget *widget, gpointer data){
     char **cards = getCards((char*) DEFAULT_DRM_DIR);
     if (cards == NULL) {
@@ -163,6 +163,7 @@ int main(int argc,
     GObject *window;
     GObject *button;
     GObject *textBox;
+    GtkToggleButton *toggle;
     
     gtk_init(&argc, &argv);
 
@@ -174,17 +175,41 @@ int main(int argc,
     window = gtk_builder_get_object(builder, "window");
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-    button = gtk_builder_get_object(builder, "btn_low_profile");
-    g_signal_connect(button, "clicked", G_CALLBACK(lowProfile), NULL);
+    GObject *cards = gtk_builder_get_object(builder, "cmb_cards");
+    g_signal_connect(cards, "changed", G_CALLBACK(changeCard), NULL);
 
+    toggle = (GtkToggleButton*)gtk_builder_get_object(builder, "tgl_root");
+    if (canModifyPM())
+        gtk_toggle_button_set_active(toggle, TRUE);
+    else
+        gtk_toggle_button_set_active(toggle, FALSE);
+        
+    //g_signal_connect(cards, "changed", G_CALLBACK(changeCard), NULL);
+
+    
     button = gtk_builder_get_object(builder, "btn_dynpm");
     g_signal_connect(button, "clicked", G_CALLBACK(dynpm), NULL);
+
+    button = gtk_builder_get_object(builder, "btn_default");
+    g_signal_connect(button, "clicked", G_CALLBACK(changePMProfile), &pm_profiles[DEFAULT]);
+
+    button = gtk_builder_get_object(builder, "btn_auto");
+    g_signal_connect(button, "clicked", G_CALLBACK(changePMProfile), &pm_profiles[AUTO]);
+    
+    button = gtk_builder_get_object(builder, "btn_low");
+    g_signal_connect(button, "clicked", G_CALLBACK(changePMProfile), &pm_profiles[LOW]);
+
+    button = gtk_builder_get_object(builder, "btn_medium");
+    g_signal_connect(button, "clicked", G_CALLBACK(changePMProfile), &pm_profiles[MEDIUM]);
+
+    button = gtk_builder_get_object(builder, "btn_high");
+    g_signal_connect(button, "clicked", G_CALLBACK(changePMProfile), &pm_profiles[HIGH]);
 
     button = gtk_builder_get_object(builder, "quit");
     g_signal_connect(button, "clicked", G_CALLBACK(gtk_main_quit), NULL);
 
     textBox = gtk_builder_get_object(builder, "txt_temperature");
-    g_signal_connect(textBox, "clicked", G_CALLBACK(print_hello), NULL);
+    g_signal_connect(textBox, "move-cursor", G_CALLBACK(print_hello), NULL);
     
     gtk_main();
 
