@@ -99,7 +99,7 @@ This is only allowed by users with read access to
           </packing>
         </child>
         <child>
-          <object class="GtkComboBox" id="cmb_cards">
+          <object class="GtkComboBoxText" id="cmb_cards">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
           </object>

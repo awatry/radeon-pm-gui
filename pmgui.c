@@ -51,11 +51,19 @@ static pm_method_t curMethod;
 static pm_profile_t curProfile;
 static char* curCard = NULL;
 
-static void changeCard(GtkWidget *widget,
+static void changeCard(GtkComboBoxText* combo,
         gpointer data){
     
     //Get the current selected index, and then the card that goes with that index.
-    //Save the card name in curCard
+	gchar *cardName = gtk_combo_box_text_get_active_text( combo );
+
+	g_print("changing card to %s\n", cardName);
+	//Save the card name in curCard
+	
+	//Free the name string
+	g_free(cardName);
+    
+	
 }
 
 static void changePMProfile(GtkWidget *widget,
@@ -164,7 +172,9 @@ int main(int argc,
     GObject *button;
     GObject *textBox;
     GtkToggleButton *toggle;
-    
+    char **cardNames;
+	int i;
+	
     gtk_init(&argc, &argv);
 
     /* Construct a GtkBuilder instance and load our UI description */
@@ -177,16 +187,26 @@ int main(int argc,
 
     GObject *cards = gtk_builder_get_object(builder, "cmb_cards");
     g_signal_connect(cards, "changed", G_CALLBACK(changeCard), NULL);
-
+	
+	//Add all cards to combo box
+	for (i = 0; i < 3; i++){
+		cardNames = getCards((char*) DEFAULT_DRM_DIR);
+		if (cardNames != NULL){
+			while (*cardNames != NULL){
+				g_print("Adding card %s\n", *cardNames);
+				gtk_combo_box_text_append_text( GTK_COMBO_BOX_TEXT( cards ), *cardNames );
+				cardNames++;
+			}
+			freeCards(cardNames);
+		}
+	}
+	
     toggle = (GtkToggleButton*)gtk_builder_get_object(builder, "tgl_root");
     if (canModifyPM())
         gtk_toggle_button_set_active(toggle, TRUE);
     else
         gtk_toggle_button_set_active(toggle, FALSE);
-        
-    //g_signal_connect(cards, "changed", G_CALLBACK(changeCard), NULL);
 
-    
     button = gtk_builder_get_object(builder, "btn_dynpm");
     g_signal_connect(button, "clicked", G_CALLBACK(dynpm), NULL);
 
