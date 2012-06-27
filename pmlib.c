@@ -85,7 +85,7 @@ int setProfile(char *card, pm_profile_t profile){
     if (!profileIsValid(profile) || card == NULL)
         return retVal;
 
-    profileStr = pm_method_names[profile];
+    profileStr = pm_profile_names[profile];
     
     char *fileName = buildPath(DEFAULT_DRM_DIR, card, DEFAULT_PROFILE_PATH);
     if (fileName == NULL){
@@ -305,6 +305,8 @@ static int writeFile(const char *fileName, const char *contents){
     if (fileName == NULL || contents == NULL)
         return retVal;
     
+	g_print("Writing %s to %s\n", contents, fileName);
+	
     //Open the file for writing
     fp = fopen(fileName, "w");
     
