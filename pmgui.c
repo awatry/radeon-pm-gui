@@ -58,12 +58,20 @@ static void changeCard(GtkComboBoxText* combo,
 	gchar *cardName = gtk_combo_box_text_get_active_text( combo );
 
 	g_print("changing card to %s\n", cardName);
-	//Save the card name in curCard
+	//XXX: Save the card name in curCard
+	
+	//XXX: Change the GUI elements for the current card's profile/method/temp
 	
 	//Free the name string
 	g_free(cardName);
-    
-	
+}
+
+static void toggleLocked(GtkWidget *widget, gpointer data){
+	//get current toggle status
+	gboolean status = gtk_toggle_button_get_active( (GtkToggleButton*)widget );
+	g_print("Toggle locked status:");
+	g_print( (status == TRUE ? "ON" : "OFF") );
+	g_print("\n");
 }
 
 static void changePMProfile(GtkWidget *widget,
@@ -170,7 +178,7 @@ int main(int argc,
     GtkBuilder *builder;
     GObject *window;
     GObject *button;
-    GObject *textBox;
+    GObject *textView;
     GtkToggleButton *toggle;
     char **cardNames;
 	int i;
@@ -189,23 +197,22 @@ int main(int argc,
     g_signal_connect(cards, "changed", G_CALLBACK(changeCard), NULL);
 	
 	//Add all cards to combo box
-	for (i = 0; i < 3; i++){
-		cardNames = getCards((char*) DEFAULT_DRM_DIR);
-		if (cardNames != NULL){
-			while (*cardNames != NULL){
-				g_print("Adding card %s\n", *cardNames);
-				gtk_combo_box_text_append_text( GTK_COMBO_BOX_TEXT( cards ), *cardNames );
-				cardNames++;
-			}
-			freeCards(cardNames);
+	cardNames = getCards((char*) DEFAULT_DRM_DIR);
+	if (cardNames != NULL){
+		while (*cardNames != NULL){
+			g_print("Adding card %s\n", *cardNames);
+			gtk_combo_box_text_append_text( GTK_COMBO_BOX_TEXT( cards ), *cardNames );
+			cardNames++;
 		}
+		freeCards(cardNames);
 	}
-	
+
     toggle = (GtkToggleButton*)gtk_builder_get_object(builder, "tgl_root");
     if (canModifyPM())
         gtk_toggle_button_set_active(toggle, TRUE);
     else
         gtk_toggle_button_set_active(toggle, FALSE);
+	g_signal_connect(toggle, "toggled", G_CALLBACK(toggleLocked), NULL);
 
     button = gtk_builder_get_object(builder, "btn_dynpm");
     g_signal_connect(button, "clicked", G_CALLBACK(dynpm), NULL);
@@ -228,9 +235,12 @@ int main(int argc,
     button = gtk_builder_get_object(builder, "quit");
     g_signal_connect(button, "clicked", G_CALLBACK(gtk_main_quit), NULL);
 
-    textBox = gtk_builder_get_object(builder, "txt_temperature");
-    g_signal_connect(textBox, "move-cursor", G_CALLBACK(print_hello), NULL);
+    textView = gtk_builder_get_object(builder, "txt_temperature");
+    g_signal_connect(textView, "move-cursor", G_CALLBACK(print_hello), NULL);
     
+	//XXX: Set the current index/text for the combo box to the first card in the list.
+	//XXX: use the changeCard callback
+	
     gtk_main();
 
     return 0;
