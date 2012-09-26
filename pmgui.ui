@@ -5,12 +5,12 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
   </object>
+  <object class="GtkListStore" id="liststore1"/>
   <object class="GtkTextBuffer" id="textbuffer1">
     <property name="text" translatable="yes">Unable to read temperature data.
 This is only allowed by users with read access to 
 /sys/kernel/debug/drm/*</property>
   </object>
-  <object class="GtkListStore" id="liststore1"/>
   <object class="GtkWindow" id="window">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -73,6 +73,7 @@ This is only allowed by users with read access to
           <object class="GtkTextView" id="txt_temp">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="editable">False</property>
             <property name="buffer">textbuffer1</property>
           </object>
           <packing>
