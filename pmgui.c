@@ -51,6 +51,10 @@ static pm_method_t curMethod;
 static pm_profile_t curProfile;
 static char* curCard = NULL;
 
+//XXX: in the main() function, store an array of buttons so that function calls 
+//     can swap the button statuses of all buttons
+static GObject** guiWidgets = NULL;
+
 static void changeCard(GtkComboBoxText* combo,
         gpointer data){
     
@@ -201,6 +205,10 @@ int main(int argc,
 	if (cardNames != NULL){
 		while (*cardNames != NULL){
 			g_print("Adding card %s\n", *cardNames);
+			//XXX: Add some identifying information to the card names (model/brand/etc).
+			//XXX: During detection, store a chipset manufacturer (AMD/Nv) somewhere.
+			//XXX: Either store a list of names, a list of descriptions, list of manufacturers, etc..
+			//     Or use a standardized delimiter to make parsing easy.
 			gtk_combo_box_text_append_text( GTK_COMBO_BOX_TEXT( cards ), *cardNames );
 			cardNames++;
 		}
@@ -214,7 +222,9 @@ int main(int argc,
         gtk_toggle_button_set_active(toggle, FALSE);
 	g_signal_connect(toggle, "toggled", G_CALLBACK(toggleLocked), NULL);
 
-    button = gtk_builder_get_object(builder, "btn_dynpm");
+	//XXX: Change the dynpm/profile switch into a sliding toggle.
+	//XXX: Move the profile selection to a visually distinct area from the dynpm/profile switch.
+	button = gtk_builder_get_object(builder, "btn_dynpm");
     g_signal_connect(button, "clicked", G_CALLBACK(dynpm), NULL);
 
     button = gtk_builder_get_object(builder, "btn_default");
